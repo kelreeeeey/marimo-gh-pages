@@ -1,12 +1,3 @@
-# /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "marimo==0.14.12",
-#     "altair==4.2.0",
-#     "numpy>=1.26.4"
-#     "polars>=0.20.31"
-# ]
-# ///
 import marimo
 
 __generated_with = "0.14.12"
@@ -16,8 +7,7 @@ app = marimo.App(width="columns")
 @app.cell(column=0)
 def _():
     import marimo as mo
-    from mydict import hello
-    return hello, mo
+    return (mo,)
 
 
 @app.cell
@@ -32,21 +22,21 @@ def _(mo):
     return (number,)
 
 
-@app.cell
-def _(hello, mo, number, slider):
+@app.cell(hide_code=True)
+def _(mo, number, slider):
     mo.md(
         f"""
-        marimo is a **reactive** Python notebook.
+    marimo is a **reactive** Python notebook.
 
-        Slide me, dude { slider }
+    Slide me, dude { slider }
 
-        { "##" + "🍃" * slider.value }
+    { "##" + "🍃" * slider.value }
 
-        How about {number}
+    How about {number}
 
-        { "##" + "🥲" * number.value }
-        """)
-    hello()
+    { "##" + "🥲" * number.value }
+    """
+    )
     return
 
 
@@ -55,7 +45,7 @@ def _():
     return
 
 
-@app.cell(column=1)
+@app.cell(column=1, hide_code=True)
 def _(mo, number, slider):
     mo.md(
         f"""
