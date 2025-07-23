@@ -1,12 +1,3 @@
-# /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "marimo==0.14.12",
-#     "altair==4.2.0",
-#     "numpy>=1.26.4"
-#     "polars>=0.20.31"
-# ]
-# ///
 import marimo
 
 __generated_with = "0.14.12"
