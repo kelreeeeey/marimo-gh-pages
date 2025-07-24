@@ -11,14 +11,14 @@
   <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <header class="bg-gray-100 p-6 text-center rounded-lg mb-6">
-      <img src="https://raw.githubusercontent.com/marimo-team/marimo/main/docs/_static/marimo-logotype-thick.svg" alt="marimo Logo" class="w-20 h-auto mx-auto mb-3">
-      <h1 class="text-2xl font-bold mb-2">marimo WebAssembly + GitHub Pages Template</h1>
-      <p class="text-sm">Interactive Python notebooks exported to WebAssembly and deployed to GitHub Pages</p>
+      <!-- <img src="https://raw.githubusercontent.com/marimo-team/marimo/main/docs/_static/marimo-logotype-thick.svg" alt="marimo Logo" class="w-20 h-auto mx-auto mb-3"> -->
+      <h1 class="text-2xl font-bold mb-2">Kelrey's Marimo WebAssembly Notebooks</h1>
+      <p class="text-sm">Collections of things you probably like</p>
     </header>
 
     <main>
       {% if notebooks %}
-      <h2 class="text-xl font-bold text-center my-4">Notebooks</h2>
+      <h2 class="text-xl font-bold text-center my-4">Regular Notebooks</h2>
       <p class="text-center mb-4">Interactive notebooks in edit mode - you can modify and experiment with the code</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {% for notebook in notebooks %}
@@ -34,7 +34,7 @@
       {% endif %}
 
       {% if apps %}
-      <h2 class="text-xl font-bold text-center my-4">Apps</h2>
+      <h2 class="text-xl font-bold text-center my-4">Notebook Apps</h2>
       <p class="text-center mb-4">Interactive applications in run mode - code is hidden for a clean user interface</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for app in apps %}
@@ -48,6 +48,46 @@
         {% endfor %}
       </div>
       {% endif %}
+
+      {% if petrophysics_app %}
+      <h2 class="text-xl font-bold text-center my-4">Interactive Petrophysic Notebooks A Modification of McDonald, A., (2021), "Python and Petrophysics Notebook Series"</h2>
+      <p class="text-center mb-5"><a href="https://github.com/andymcdgeo/Petrophysics-Python-Series">Link to Original Repository</a></p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for app in petrophysics_app %}
+        <!-- {{ app.display_name }} App -->
+        <div class="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-100 p-3 font-semibold">{{ app.display_name }}</div>
+          <div class="p-4">
+            <a href="{{ app.html_path }}" class="inline-block bg-amber-500 hover:bg-amber-600 text-white py-1 px-3 rounded transition-colors">Open App</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- {% if collections %} -->
+      <!-- <h2 class="text-xl font-bold text-center my-4">Collections of Notebook Apps</h2> -->
+      <!-- <p class="text-center mb-4">Collections of Notebook</p> -->
+      <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"> -->
+      <!--   {% for collection in collections %} -->
+      <!--   <!-- {{ app.display_name }} App --> -->
+      <!--   <div class="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden"> -->
+      <!--     <div class="bg-gray-100 p-3 font-semibold">{{ collection.display_name }}</div> -->
+      <!--         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"> -->
+      <!--           {% for app in apps %} -->
+      <!--           <!-- {{ app.display_name }} App --> -->
+      <!--           <div class="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden"> -->
+      <!--             <div class="bg-gray-100 p-3 font-semibold">{{ app.display_name }}</div> -->
+      <!--             <div class="p-4"> -->
+      <!--               <a href="{{ app.html_path }}" class="inline-block bg-amber-500 hover:bg-amber-600 text-white py-1 px-3 rounded transition-colors">Open App</a> -->
+      <!--             </div> -->
+      <!--           </div> -->
+      <!--           {% endfor %} -->
+      <!--         </div> -->
+      <!--   </div> -->
+      <!--   {% endfor %} -->
+      <!-- </div> -->
+      <!-- {% endif %} -->
     </main>
 
     <footer class="mt-10 pt-6 border-t border-gray-200 text-center text-sm text-gray-600">

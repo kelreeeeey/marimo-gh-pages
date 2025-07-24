@@ -93,6 +93,7 @@ def _generate_index(
     template_file: Path,
     notebooks_data: List[dict] | None = None,
     apps_data: List[dict] | None = None,
+    petrophysics_app_data: List[dict] | None = None,
 ) -> None:
     """Generate an index.html file that lists all the notebooks.
 
@@ -128,7 +129,7 @@ def _generate_index(
         template = env.get_template(template_name)
 
         # Render the template with notebook and app data
-        rendered_html = template.render(notebooks=notebooks_data, apps=apps_data)
+        rendered_html = template.render(notebooks=notebooks_data, apps=apps_data, petrophysics_app=petrophysics_app_data)
 
         # Write the rendered HTML to the index.html file
         with open(index_path, "w") as f:
@@ -225,8 +226,12 @@ def main(
     # Export apps from the apps/ directory
     apps_data = _export(Path("apps"), output_dir, as_app=True)
 
+    # Export apps from the apps/ directory
+    petro_apps_data = _export(Path("petrophysics_app"), output_dir, as_app=True)
+
+
     # Exit if no notebooks or apps were found
-    if not notebooks_data and not apps_data:
+    if (not notebooks_data) and (not apps_data) and (not petro_apps_data):
         logger.warning("No notebooks or apps found!")
         return
 
@@ -235,6 +240,7 @@ def main(
         output_dir=output_dir,
         notebooks_data=notebooks_data,
         apps_data=apps_data,
+        petrophysics_app_data=petro_apps_data,
         template_file=template_file,
     )
 
