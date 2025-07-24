@@ -9,6 +9,7 @@
 #     "pandas==2.0.3",
 #     "pyarrow==21.0.0",
 #     "pyarr==5.2.0",
+#     "polars==0.20.23",
 # ]
 # ///
 
@@ -73,18 +74,23 @@ def _(mo):
 @app.cell
 def _():
     import pandas as pd
+    import polars as pl
     import numpy as np
     import hvplot as hv
     import matplotlib.pyplot as plt
 
-    return hv, np, pd, plt
+    return hv, np, pd, plt, pl
 
 
 @app.cell
-def _(mo, pd):
-    well = pd.read_csv(
-        mo.notebook_location() / "public" / "data/L0509WellData.csv", header=0
-    )
+def _(mo, pd, pl):
+    # well = pd.read_csv(
+    #     mo.notebook_location() / "public" / "data/L0509WellData.csv", header=0
+    # )
+
+    well = pl.read_csv(
+        mo.notebook_location() / "public" / "data/L0509WellData.csv"
+    ).to_pandas()
     return (well,)
 
 

@@ -23,6 +23,7 @@ tasks:
     aliases:
       - s
     cmds:
+      - echo https://localhost:8080
       - python -m http.server -d _site 8080
     silent: false
     method: none
