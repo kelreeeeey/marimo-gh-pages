@@ -15,7 +15,7 @@ tasks:
     aliases:
       - b
     cmds:
-      - uv run build.py --output_dir '_site' --template 'templates/tailwind.html.j2'
+      - uv run ./.github/scripts/_build.py --output_dir '_site' --template 'templates/tailwind.html.j2'
     silent: false
     method: none
 

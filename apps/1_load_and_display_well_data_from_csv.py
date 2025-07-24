@@ -70,7 +70,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import pandas as pd
     import numpy as np
@@ -80,7 +80,7 @@ def _():
     return hv, np, pd, plt
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, pd):
     well = pd.read_csv(
         mo.notebook_location() / "public" / "data/L0509WellData.csv", header=0
