@@ -1,0 +1,28 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+  build:
+    aliases:
+      - b
+    cmds:
+      - uv run build.py --output_dir '_site' --template 'templates/tailwind.html.j2'
+    silent: false
+    method: none
+
+  serve:
+    aliases:
+      - s
+    cmds:
+      - python -m http.server -d _site 8080
+    silent: false
+    method: none
