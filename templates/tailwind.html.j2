@@ -12,13 +12,13 @@
     <!-- Header -->
     <header class="bg-gray-100 p-6 text-center rounded-lg mb-6">
       <!-- <img src="https://raw.githubusercontent.com/marimo-team/marimo/main/docs/_static/marimo-logotype-thick.svg" alt="marimo Logo" class="w-20 h-auto mx-auto mb-3"> -->
-      <h1 class="text-2xl font-bold mb-2">Kelrey's Marimo WebAssembly Notebooks</h1>
-      <p class="text-sm">Collections of things you probably like</p>
+      <h1 class="text-2xl font-bold mb-2">Pyhton x Marimo - WebAssembly Notebooks</h1>
+      <p class="text-sm">A collection of things you probably like</p>
     </header>
 
     <main>
       {% if notebooks %}
-      <h2 class="text-xl font-bold text-center my-4">Regular Notebooks</h2>
+      <h2 class="text-xl font-bold text-left my-4">Regular Notebooks</h2>
       <p class="text-center mb-4">Interactive notebooks in edit mode - you can modify and experiment with the code</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {% for notebook in notebooks %}
@@ -34,7 +34,7 @@
       {% endif %}
 
       {% if apps %}
-      <h2 class="text-xl font-bold text-center my-4">Notebook Apps</h2>
+      <h2 class="text-xl font-bold text-left my-4">Notebook Apps</h2>
       <p class="text-center mb-4">Interactive applications in run mode - code is hidden for a clean user interface</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for app in apps %}
@@ -88,6 +88,7 @@
       <!--   {% endfor %} -->
       <!-- </div> -->
       <!-- {% endif %} -->
+
     </main>
 
     <footer class="mt-10 pt-6 border-t border-gray-200 text-center text-sm text-gray-600">
