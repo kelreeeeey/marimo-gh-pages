@@ -391,7 +391,7 @@ def _(alt, mo, select_log, select_log_scale, well):
             .encode(
                 alt.X(select_log.value, scale=alt.Scale(domain=_xlim)).scale(
                     zero=False, type="log" if select_log_scale.value else "linear"),
-                alt.Y('DEPTH', sort = 'ascending',scale=alt.Scale(domain=_ylim)),
+                alt.Y('DEPTH', sort = 'descending',scale=alt.Scale(domain=_ylim)),
                 order = 'DEPTH')
             # .configure_mark(color = 'red', size=0.15, fillOpacity=0.5)
             .properties(width=300, height=800,)
