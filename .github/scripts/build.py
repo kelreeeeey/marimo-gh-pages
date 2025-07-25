@@ -75,7 +75,8 @@ def _export_html_wasm(
 
         # Run marimo export command
         logger.debug(f"Running command: {cmd}")
-        subprocess.run(cmd, capture_output=True, text=True, check=True)
+        subprocess.run(cmd,)
+        # subprocess.run(cmd, capture_output=True, text=True, check=True)
         logger.info(f"Successfully exported {notebook_path}")
         return True
     except subprocess.CalledProcessError as e:

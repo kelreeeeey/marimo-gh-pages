@@ -2,13 +2,11 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #     "marimo==0.14.13",
-#     "altair==4.2.0",
-#     "matplotlib==3.10.3",
-#     "hvplot==0.11.3",
 #     "numpy==1.26.4",
-#     "pandas==2.0.3",
+#     "pandas>=2.0.3",
 #     "pyarrow==21.0.0",
-#     "pyarr==5.2.0",
+#     "altair==5.5.0",
+#     "hvplot==0.11.3",
 #     "polars==1.30.0",
 # ]
 # ///
@@ -25,6 +23,12 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    import marimo as mo
+    return (mo,)
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
@@ -38,21 +42,29 @@ def _(mo):
     Modified By: [T. S. Kelrey](https://github.com/kelreeeeey)
 
     All Credits to McDonald, A., tho! I'm just chillin with [marimo](https://marimo.io/) here!
+
+
+    ---
     """
     )
     return
-
-
-@app.cell
-def _():
-    import marimo as mo
-    return (mo,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
+    This notebook is layout in "vertical/column" mode.
+
+    Each "column" will be treated like "chapter" or "sub-chapter" I would say. Enjoy!!
+    """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Wait up, it takes some times to fully load
 
 
@@ -60,35 +72,57 @@ def _(mo):
     > Note 💡
     >
     > you can always show the code of the notebook by clicking the `three dots` button on the top-right corner of this page.
-    """
-    )
+    """).callout("danger")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""The following tutorial illustrates loading basic well log data from a csv file by using pandas, and displaying the data using the plotting option available in pandas.""")
+    mo.md(
+        """
+    ### Modifications:
+
+    - Using `marimo notebook` instead of `jupyter notebook`
+
+    - Using `polars` instead of `pandas` to read the csv
+
+    - Not using `numpy`,
+
+    - Visualize things using `altair` instead of `matplotlib`
+    """
+    )
+    return
+
+
+@app.cell(column=1, hide_code=True)
+def _(mo):
+    mo.md(r"""## Lock in the CSV and clean them!!""")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""The following tutorial illustrates loading basic well log data from a csv file by using polars, and displaying the data using altair.""")
     return
 
 
 @app.cell
 def _():
-    import pandas as pd
     import polars as pl
-    import numpy as np
-    import hvplot as hv
-    import matplotlib.pyplot as plt
-
-    return hv, np, pd, plt, pl
+    # import hvplot as hv
+    import altair as alt
+    return alt, pl
 
 
 @app.cell
-def _(mo, pd, pl):
-    _data = str(mo.notebook_location() / "public" / "data/L0509WellData.csv")
-    well = pd.read_csv(_data)
-    print(_data, type(_data))
-    # well = pl.read_csv(_data).to_pandas()
-    return (well,)
+def _():
+    return
+
+
+@app.cell
+def _(mo, pl):
+    raw_well = pl.read_csv(str(mo.notebook_location() / "public" / "data/L0509WellData.csv"))
+    return (raw_well,)
 
 
 @app.cell(hide_code=True)
@@ -98,39 +132,47 @@ def _(mo):
     To check that the data has been loaded in correctly, we can use
     the `.head()` function in pandas to view the first 5 rows and the
     header.
+
+    > polars has the same method as pandas has
     """
     )
     return
 
 
 @app.cell
-def _(well):
-    well.head()
+def _(raw_well):
+    raw_well.head()
     return
 
 
-@app.cell
-def _(mo, well):
+@app.cell(hide_code=True)
+def _(mo, raw_well):
     mo.vstack(
         [
             mo.md(
+                r"""Here inside marimo, you can directly interact with your dataframe, how convinient is that?."""
+            ).callout(kind="info"),
+
+            raw_well,
+
+            mo.md(
                 r"""You can dowload this file, too, do you see the `download` button on the bottom-right corner of following tabel? yeah, try it out."""
-            ),
-            well,
+            ).callout(kind="warn"),
+
         ]
-    )
+    ).callout()
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""We can also view some statistics on the curves by using the `describe()` function.""")
+    mo.md(r"""Just like `pandas` did, We can also view some statistics on the curves by using the `describe()` function.""")
     return
 
 
 @app.cell
-def _(well):
-    well.describe()
+def _(raw_well):
+    raw_well.describe()
     return
 
 
@@ -143,8 +185,33 @@ def _(mo):
     represented by `-999.25`, to a Not a Number (`NaN`). We can achieve this using
     the replace function.
 
+    ### Using `pandas`
+
     ```python
     well_dataframe.replace(-999.0, np.nan, inplace=True)
+    ```
+
+    or
+
+    ```python
+    well_dataframe.replace(-999.0, float('nan'), inplace=True)
+    ```
+
+
+    ### Using `polars`
+
+    ```python
+    _s = dict() # make an empty map as container
+
+    for col in well_dataframe.columns: # iterate through the column name
+
+        # take the column name, and replace the desired value
+        # whilst assign it to the empty map as we iterating through
+        _s[col] = well_dataframe[col].replace(-999, float("nan")) 
+
+    # then we make a new polars.DataFrame just by
+    # passing the container we've had and processed before
+    new_well = pl.DataFrame(_s)
     ```
     """
     )
@@ -152,9 +219,12 @@ def _(mo):
 
 
 @app.cell
-def _(np, well):
-    well.replace(-999.0, np.nan, inplace=True)
-    return
+def _(pl, raw_well):
+    _s = dict()
+    for col in raw_well.columns:
+        _s[col] = raw_well[col].replace(-999, float("nan"))
+    well = pl.DataFrame(_s)
+    return (well,)
 
 
 @app.cell(hide_code=True)
@@ -212,7 +282,7 @@ def _(mo):
     return
 
 
-@app.cell(column=1, hide_code=True)
+@app.cell(column=2, hide_code=True)
 def _(mo):
     mo.md(r"""## Viewing Data on a Log Plot""")
     return
@@ -228,6 +298,14 @@ def _(mo):
     ```python
     well_dataframe.plot(x="GR", y="DEPTH")
     ```
+
+    ---
+
+    However, we are using `polar` rn, since this is a WASM notebook, thx to marimo and uv, btw.
+    We are going to use `altair` since that is the very the most marimo's supported visualization tool
+
+
+    with that being said, for my `pandas x matplotlib` folks, i hear you guys!, y'all will be going to encounter a lot of alien plottin API from this point, just remember, you can always toggle wether to show or hide the code by the `[...]` button at the top-right corner.
     """
     )
     return
@@ -267,7 +345,7 @@ def _(mo, well):
 def _(mo, select_log_demo, select_log_scale_demo):
     mo.md(
         f"""
-    {mo.vstack([select_log_demo, select_log_scale_demo]).callout()}
+    {mo.vstack([select_log_demo, select_log_scale_demo]).callout(kind="warn")}
 
     You can try select things from above and see their value change
 
@@ -298,17 +376,27 @@ def _(mo, well):
 
 
 @app.cell
-def _(hv, mo, select_log, select_log_scale, well):
+def _():
+    return
+
+
+@app.cell
+def _(alt, mo, select_log, select_log_scale, well):
     _xlim = (well[select_log.value].max()+0.001, well[select_log.value].min() - 0.001)
     _ylim = (well["DEPTH"].max()+10, well["DEPTH"].min() - 10)
 
-    _hv_plot = hv.plot(
-        well, kind="line",
-        x=select_log.value, y="DEPTH",
-        width=300, height=800,
-        grid=True,
-        ylim=_ylim, xlim=_xlim,
-    ).opts(logx=select_log_scale.value)
+    _chrt = (
+        alt.Chart(well)
+            .mark_line(color='blue', point=False,)
+            .encode(
+                alt.X(select_log.value, scale=alt.Scale(domain=_xlim)).scale(
+                    zero=False, type="log" if select_log_scale.value else "linear"),
+                alt.Y('DEPTH', sort = 'ascending',scale=alt.Scale(domain=_ylim)),
+                order = 'DEPTH')
+            # .configure_mark(color = 'red', size=0.15, fillOpacity=0.5)
+            .properties(width=300, height=800,)
+            .interactive()
+    )
 
     _md1 = mo.md(f"""
     ### Now we use that to make our interactive plot
@@ -328,7 +416,7 @@ def _(hv, mo, select_log, select_log_scale, well):
         _md1.center(),
         mo.hstack([
             _md2.center(),
-            _hv_plot
+            mo.ui.altair_chart(_chrt)
         ], widths=[0.2, 0.8])
     ])
     return
@@ -347,7 +435,7 @@ def _(mo):
     return
 
 
-@app.cell(column=2, hide_code=True)
+@app.cell(column=3, hide_code=True)
 def _(mo):
     mo.md(r"""## Cross Plot""")
     return
@@ -372,12 +460,15 @@ def _(mo):
 
 
 @app.cell
-def _(mo, plt, well):
-    # well.plot(kind = 'scatter', x = 'NPHI', y = 'RHOB')
-    plt.scatter(well["NPHI"], well["RHOB"])
-    plt.xlabel("NPHI")
-    plt.ylabel("RHOB")
-    mo.as_html(plt.gca()).center()
+def _(alt, mo, well):
+    _chrt = mo.ui.altair_chart(
+        alt.Chart(well)
+            .mark_point(color='blue', filled=True)
+            .encode(alt.X("NPHI",).scale(zero=False), alt.Y('RHOB',).scale(zero=False),)
+            .properties(width=500, height=500,)
+            .interactive()
+    )
+    _chrt.center()
     return
 
 
@@ -419,7 +510,8 @@ def _(mo, select_c, select_x, select_xlog_scale, select_y, select_ylog_scale):
 
 @app.cell
 def _(
-    hv,
+    alt,
+    mo,
     select_c,
     select_x,
     select_xlog_scale,
@@ -427,38 +519,22 @@ def _(
     select_ylog_scale,
     well,
 ):
-    hv.plot(
-        well,
-        kind="scatter",
-        x=select_x.value,
-        y=select_y.value,
-        color=select_c.value,
-        cmap="jet",
-        width=600,
-        height=500,
-        grid=True,
-    ).opts(logy=select_ylog_scale.value,
-           logx=select_xlog_scale.value)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""Data can also be easily displayed as a histogram in the form of bars:""")
-    return
-
-
-@app.cell
-def _(mo, plt, well):
-    _ = plt.hist(well["GR"], bins=30)
-    plt.ylabel("Frequency")
-    mo.as_html(plt.gca()).center()
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""That is all for this short tutorial. In the next one we will take our plotting to the next level and construct the familiar log plot using matplotlib.""")
+    _chrt = mo.ui.altair_chart(
+        alt.Chart(well)
+            .mark_point(filled=True)
+            .encode(
+                alt.X(select_x.value).scale(
+                    zero=False, type="log" if select_xlog_scale.value else "linear"),
+                alt.Y(select_y.value).scale(
+                    zero=False, type="log" if select_ylog_scale.value else "linear"),
+                color=alt.Color(
+                    select_c.value
+                ).scale(scheme="rainbow").legend(True)
+            )
+            .properties(width=500, height=500, grid=True, title=f"CROSS PLOT {select_x.value} x {select_y.value}")
+            .interactive()
+    )
+    _chrt.center()
     return
 
 
