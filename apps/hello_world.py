@@ -6,7 +6,7 @@
 #     "pandas==2.0.3",
 #     "pyarrow==21.0.0",
 #     "pyarr==5.2.0",
-#     "polars==0.20.23",
+#     "polars==1.30.0",
 # ]
 # ///
 
@@ -40,15 +40,15 @@ def _():
 @app.cell
 def _(mo, pl):
     well_2 = pl.read_csv(
-        mo.notebook_location() / "public" / "data/L0509WellData.csv"
-    ).to_pandas()
+        str(mo.notebook_location() / "public" / "data/L0509WellData.csv")
+    )
     well_2
     return
 
 @app.cell(hide_code=True)
 def _(mo, pd):
     well = pd.read_csv(
-        mo.notebook_location() / "public" / "data/L0509WellData.csv", header=0
+        str(mo.notebook_location() / "public" / "data/L0509WellData.csv"), header=0
     )
     well
     return

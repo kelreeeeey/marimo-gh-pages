@@ -65,12 +65,13 @@ def _export_html_wasm(
         cmd.extend(["--mode", "edit"])  # Notebooks run in "edit" mode
 
     try:
+        print("# Create full output path and ensure directory exists")
         # Create full output path and ensure directory exists
         output_file: Path = output_dir / notebook_path.with_suffix(".html")
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         # Add notebook path and output file to command
-        cmd.extend([str(notebook_path), "-o", str(output_file)])
+        cmd.extend([str(notebook_path).replace("\\", "/"), "--output", str(output_file).replace("\\", "/")])
 
         # Run marimo export command
         logger.debug(f"Running command: {cmd}")
@@ -78,11 +79,13 @@ def _export_html_wasm(
         logger.info(f"Successfully exported {notebook_path}")
         return True
     except subprocess.CalledProcessError as e:
+        print("# Handle marimo export errors")
         # Handle marimo export errors
         logger.error(f"Error exporting {notebook_path}:")
         logger.error(f"Command output: {e.stderr}")
         return False
     except Exception as e:
+        print("# Handle unexpected errors")
         # Handle unexpected errors
         logger.error(f"Unexpected error exporting {notebook_path}: {e}")
         return False
@@ -129,7 +132,9 @@ def _generate_index(
         template = env.get_template(template_name)
 
         # Render the template with notebook and app data
-        rendered_html = template.render(notebooks=notebooks_data, apps=apps_data, petrophysics_app=petrophysics_app_data)
+        rendered_html = template.render(notebooks=notebooks_data,
+                                        apps=apps_data,
+                                        petrophysics_app=petrophysics_app_data)
 
         # Write the rendered HTML to the index.html file
         with open(index_path, "w") as f:
@@ -229,10 +234,12 @@ def main(
     # Export apps from the apps/ directory
     petro_apps_data = _export(Path("petrophysics_app"), output_dir, as_app=True)
 
+    print(petro_apps_data, apps_data)
 
     # Exit if no notebooks or apps were found
     if (not notebooks_data) and (not apps_data) and (not petro_apps_data):
         logger.warning("No notebooks or apps found!")
+        print("WHAT")
         return
 
     # Generate the index.html file that lists all notebooks and apps

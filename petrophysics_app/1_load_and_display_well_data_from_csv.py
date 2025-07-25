@@ -9,7 +9,7 @@
 #     "pandas==2.0.3",
 #     "pyarrow==21.0.0",
 #     "pyarr==5.2.0",
-#     "polars==0.20.23",
+#     "polars==1.30.0",
 # ]
 # ///
 
@@ -84,13 +84,10 @@ def _():
 
 @app.cell
 def _(mo, pd, pl):
-    # well = pd.read_csv(
-    #     mo.notebook_location() / "public" / "data/L0509WellData.csv", header=0
-    # )
-
-    well = pl.read_csv(
-        mo.notebook_location() / "public" / "data/L0509WellData.csv"
-    ).to_pandas()
+    _data = str(mo.notebook_location() / "public" / "data/L0509WellData.csv")
+    well = pd.read_csv(_data)
+    print(_data, type(_data))
+    # well = pl.read_csv(_data).to_pandas()
     return (well,)
 
 
