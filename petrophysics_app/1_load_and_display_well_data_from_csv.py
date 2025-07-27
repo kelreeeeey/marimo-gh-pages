@@ -120,8 +120,8 @@ def _():
 
 
 @app.cell
-def _(mo, pl):
-    raw_well = pl.read_csv(str(mo.notebook_location() / "public" / "data/L0509WellData.csv"))
+def _(pl):
+    raw_well = pl.read_csv("https://raw.githubusercontent.com/kelreeeeey/petrophysics-python-and-odin/master/Data/L0509WellData.csv")
     return (raw_well,)
 
 

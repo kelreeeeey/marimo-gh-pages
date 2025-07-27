@@ -8,24 +8,27 @@
 #     "altair==5.5.0",
 #     "hvplot==0.11.3",
 #     "polars==1.30.0",
+#     "wigglystuff",
 # ]
 # ///
 
 import marimo
 
 __generated_with = "0.14.13"
-app = marimo.App(width="columns")
+app = marimo.App(width="medium")
 
 
-@app.cell(column=0)
+@app.cell(hide_code=True)
 def _():
     import marimo as mo
-    return (mo,)
+    import polars as pl
+    import altair as alt
+    return alt, mo, pl
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## 2. Displaying a Well Plot with Matplotlib""")
+    mo.md(r"""## 2. Displaying a Well Plot with _`Altair`_ instead of _`Matplotlib`_""")
     return
 
 
@@ -45,18 +48,6 @@ def _(mo):
 
 
     ---
-    """
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(
-        r"""
-    This notebook is layout in "vertical/column" mode.
-
-    Each "column" will be treated like "chapter" or "sub-chapter" I would say. Enjoy!!
     """
     )
     return
@@ -95,15 +86,14 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _():
-    import polars as pl
-    import altair as alt
-    return alt, pl
-
-
-@app.cell
 def _(mo):
-    mo.md(r"""> ### The following tutorial illustrates displaying well data from a CSV on a custom `altair` (instead of matplotlib) plot.""")
+    mo.md(r"""> ## The following tutorial illustrates displaying well data from a CSV on a custom `altair` (instead of matplotlib) plot.""")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""## Loading Well Data from CSV""")
     return
 
 
@@ -114,30 +104,33 @@ def _(mo):
 
 
 @app.cell
-def _(mo, pl):
+def _(pl):
     _s = dict()
-    raw_well = pl.read_csv(str(mo.notebook_location() / "public" / "data/L0509WellData.csv"))
+    raw_well = pl.read_csv("https://raw.githubusercontent.com/kelreeeeey/petrophysics-python-and-odin/master/Data/L0509WellData.csv")
     for col in raw_well.columns:
         _s[col] = raw_well[col].replace([-999.00, -999.25], [float("nan"), float("nan")])
     well = pl.DataFrame(_s)
     return (well,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
-    mo.md(r"""### Loading Well Data from CSV""")
-    return
+    show_df_stat = mo.ui.switch(label="Show Dataframe Statistics?", value=True)
+    show_df = mo.ui.switch(label="Show Dataframe", value=False)
+    return show_df, show_df_stat
 
 
 @app.cell
-def _(well):
-    well.describe()
-    return
-
-
-@app.cell(column=1, hide_code=True)
-def _(mo):
-    mo.md(r"""### Setting up the logplot""")
+def _(mo, show_df, show_df_stat, well):
+    if show_df_stat.value and not show_df.value:
+        _h = mo.vstack([mo.hstack([show_df_stat, show_df]), well.describe()], align="end")
+    elif show_df_stat.value and show_df.value:
+        _h = mo.vstack([mo.hstack([show_df_stat, show_df]), well.describe(), well], align="end")
+    elif not show_df_stat.value and show_df.value:
+        _h = mo.vstack([mo.hstack([show_df_stat, show_df]), well], align="end")
+    else:
+        _h = mo.vstack([mo.hstack([show_df_stat, show_df])], align="end")
+    _h
     return
 
 
@@ -145,141 +138,399 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-    We can quickly make a log plot using altair charts.
+    ---
+
+
+
+
+
+    ---
+    """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""## Setting up the logplot""")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+    <!-- We can quickly make a log plot using altair charts.
 
     There is a same concept like "subplots" of matplotlib.pyplot in Altari.
 
     This allows us to space out multiple plots (tracks) in an easy to understand way. <br><br>
 
-    We will separate, and combine altair chart in a several manner to produce a convinient log plot.
+    We will separate, and combine altair chart in a several manner to produce a convinient log plot. -->
     """
     )
     return
 
 
 @app.cell
-def _(mo, well):
+def _():
+    # tab1 = mo.accordion(
+    #         {
+    #             "### 1.a. Chart": mo.md("Nothing!"),
+    #             "### 1.b. Shared Depth Axis": mo.md("Nothing!"),
+    #             "### 1.c. Putting those together": mo.md(
+    #                 "![goat](https://images.unsplash.com/photo-1524024973431-2ad916746881)"
+    #             ),
+    #         },
+    #         lazy=True
+    #     )
+    return
+
+
+@app.cell
+def _():
+    # tab2 = mo.accordion(
+    #         {
+
+    #         },
+    #         lazy=True
+    #     )
+    return
+
+
+@app.cell
+def _():
+    # setup_log_plot_tabs = mo.ui.tabs({
+    #     "## 1. Setup `Altair` Chart": tab1,
+    #     "## 2. `Altair` Encoding": tab2
+    # }, lazy=False, value="## 1. Setup `Altair` Chart", label="TL;DR")
+    # # setup_log_plot_tabs
+    return
+
+
+@app.cell
+def _(well):
     selection = well.columns
-    select_log = mo.ui.radio(selection[1:], value="GR", label="## Log to plot", inline=True)
-    select_log_scale = mo.ui.switch(label="Logarithmic scale?", value=False)
-    return (select_log_scale,)
+    return (selection,)
+
+
+@app.cell
+def _(mo):
+    update_table_button = mo.ui.run_button(label="Update Plot Log Config", kind="warn")
+    return (update_table_button,)
+
+
+@app.cell
+def _(mo, selection):
+    n_log_charts = mo.ui.number(value=len(selection)-1, label="### Set Number of Log Charts")
+    return (n_log_charts,)
+
+
+@app.cell
+def _(cycle, mo, n_log_charts, selection):
+    import random
+    _c = selection[1:]
+    random.shuffle(_c)
+    _log_cycle = cycle(_c)
+    log_charts_selections = mo.ui.array(
+        [mo.ui.multiselect(
+            _c,
+            label="",
+            value=[_log],
+            full_width=True
+        ) for _i, _log in zip(range(n_log_charts.value), cycle(_c))],
+        label="Chart")
+    return (log_charts_selections,)
+
+
+@app.cell
+def _(mo, well):
+    from itertools import cycle
+    _color_cycle = cycle(["green", "purple", "red", "orange", "blue"])
+    logs_input = [
+        {
+            "Log":_log,
+            "Name":mo.ui.text(value=_log, label="Log Name"),
+            "Color":mo.ui.text(value=_col),
+            "Scale":mo.ui.dropdown(["linear", "log"], value="linear"),
+            "Min-Max":mo.ui.dropdown(["auto", "manual"], value="auto"),
+            "Min":mo.ui.number(step=0.01, value=-10),
+            "Max":mo.ui.number(step=0.01, value=10),
+
+        } for _log, _col in zip(well.columns[1:], _color_cycle)
+    ]
+    return cycle, logs_input
+
+
+@app.cell
+def _(logs_input, mo, well):
+    tb = mo.ui.table(logs_input, selection="multi", label="### Plot Log Config",
+                     initial_selection=list(range(len(well.columns[1:]))),
+                     show_download=False,
+                    )
+    return (tb,)
+
+
+@app.cell
+def _(alt, get_lims, well):
+
+    chart_height = 1000
+    chart_width = 220
+
+    _min_d, _max_d = get_lims("DEPTH")
+    DEPTH_LIMIT = (_min_d + 400, _max_d -400)
+    # brush = alt.selection_interval(encodings=['y'], empty=True)
+
+    brush = alt.selection_point(nearest=True, on="pointerover", fields=["y"], empty=False)
+
+
+    base_chart = alt.Chart(well, )
+
+    ORDER = "DEPTH"
+    DEPTH_ENCODING = (alt
+        .Y('DEPTH', sort = 'descending',scale=alt.Scale(domain=get_lims("DEPTH")), )
+        .scale(zero=False, type="linear")
+        .axis(tickColor="black", domainWidth=2)
+    )
+    DEPTH_ENCODING_SHARED = DEPTH_ENCODING.axis(title="", domain=True, tickSize=0, labels=False, domainWidth=2)
+
+
+    return (
+        DEPTH_ENCODING,
+        DEPTH_ENCODING_SHARED,
+        ORDER,
+        base_chart,
+        brush,
+        chart_height,
+        chart_width,
+    )
+
+
+@app.cell
+def _(
+    DEPTH_ENCODING,
+    DEPTH_ENCODING_SHARED,
+    ORDER,
+    alt,
+    base_chart,
+    brush,
+    chart_height,
+    chart_width,
+    log_charts_selections,
+    tb_val,
+):
+    log_charts = []
+    for _i, _logs in enumerate(log_charts_selections.value):
+
+        if 0 == _i:
+            _z = DEPTH_ENCODING
+        else:
+            _z = DEPTH_ENCODING_SHARED
+        log_charts.append([])
+        _offset = 0
+
+        if 0 == len(_logs):
+            log_charts[_i].append(
+                base_chart
+                    .mark_line(color="black", point=False, strokeWidth=1)
+                    .encode(_z, order = ORDER).add_params(brush)
+                .properties(width=chart_width, height=chart_height,)
+            )
+        for _selected_log in _logs:
+            _log = tb_val[_selected_log]
+            log_charts[_i].append(
+                base_chart
+                    .mark_line(color=_log["Color"], point=False, strokeWidth=1)
+                    .encode(
+                        (
+                            alt
+                                .X(_log["Log"], scale=alt.Scale(domain=_log["Min-Max"]))
+                                .scale(zero=False, type=_log["Scale"])
+                                .axis(offset=_offset, bandPosition= 100, orient="top", labelColor=_log["Color"],
+                                      title=_log["Name"], titleColor=_log["Color"],
+                                     grid=True, gridColor=_log["Color"], gridOpacity=0.25, domainWidth=2)
+                        ),
+                        _z, order = ORDER).add_params(brush)
+                .properties(width=chart_width, height=chart_height,)
+            )
+            _offset += 50
+    return (log_charts,)
+
+
+@app.cell
+def _(alt, log_charts):
+    hchart = alt.HConcatChart(
+        spacing=0.0,
+        bounds="flush"
+    )
+
+    for _chrt in log_charts:
+        if 1 == len(_chrt):
+            hchart |= _chrt[0].resolve_scale(x="independent")#.add_params(brush)
+        else:
+            # hchart = alt.layer(*_chrt).add_params(brush)
+            _h = _chrt[0]#.add_params(brush)
+            for _ in _chrt[1:]:
+                _h += _#.add_params(brush)
+            hchart |= _h.resolve_scale(x="independent")
+    return (hchart,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        r"""
-    #### Customising the Log Plot
-    We can further customise the plot to look more like a familiar log plot, with the curve names and scales at the top and two curves (density & neutron) in the one track.
+        """
+    ---
+
+    ## The Plot
+
+    - Double click on the chart to reset the view
+
+    - You can click+drag to move the curve around its chart
+
+    - Try to scroll up/down or pinch your touchpad the chart!
     """
     )
     return
 
 
 @app.cell(hide_code=True)
-def _(alt, mo, select_log_scale, well):
-    _xlim = (well["GR"].max()+0.001, well["GR"].min() - 0.001)
-    _ylim = (well["DEPTH"].max()+10, well["DEPTH"].min() - 10)
+def _(mo, tb, update_table_button):
+    mo.vstack([mo.md("""
+    - If you select/unselect the table' items, chart will be automatically updated
 
-    _base = alt.Chart(well)
+    - If you change the values for each row, you have to click the yellow button to update
 
-    _SHARE_Z = (
-        alt
-            .Y('DEPTH', sort = 'descending',scale=alt.Scale(domain=_ylim))
-            .scale(zero=False, type="linear")
-            .axis(disable=True)
-    )
-    _height = 1000
-    _width  = 220 
-
-
-    # ---
-    # .configure_axisBottom(disable = False, position = 0, bandPosition= 10, labelBaseline="line-top")
-    # ---
-
-
-    _chrt = (
-        _base
-            .mark_line(color='green', point=False,)
-            .encode(
-                (
-                    alt
-                        .X("GR", scale=alt.Scale(domain=_xlim))
-                        .scale(zero=False, type="log" if select_log_scale.value else "linear")
-                        .axis(bandPosition= 100, orient="top", labelColor="green", titleColor="green",
-                             grid=True, gridColor="green", gridOpacity=0.25)
-                ),
-                _SHARE_Z,
-                order = 'DEPTH')
-        .properties(width=_width, height=_height,)
-        
-    )
-
-    _chrt_density = (
-        _base
-            .mark_line(color='red', point=False,)
-            .encode(
-                (
-                    alt
-                        .X("RHOB", scale=alt.Scale(domain=(1.95, 2.95)), title="Density", titleColor="red")
-                        .scale(zero=False, type="log" if select_log_scale.value else "linear")
-                        .axis(offset=0, orient="top", labelColor="red", titleColor="red",
-                             grid=True, gridColor="red", gridOpacity=0.25)
-                ),
-                _SHARE_Z.axis(title="", domain=False, tickSize=0, labels=False),
-                order = 'DEPTH')
-        .properties(width=_width, height=_height,)
-        
-    )
-
-    _chrt_neutron = (
-        _base
-            .mark_line(color='blue', point=False,)
-            .encode(
-                (
-                    alt
-                        .X("NPHI", scale=alt.Scale(domain=(0.45, -0.15)), title="Neutron")
-                        .scale(zero=False, type="log" if select_log_scale.value else "linear")
-                        .axis(offset=50, orient="top", labelColor="blue", titleColor="blue",
-                              grid=True, gridColor="blue", gridOpacity=0.25)
-                ),
-                _SHARE_Z.axis(title="", domain=False, tickSize=0, labels=False),
-                order = 'DEPTH')
-        .properties(width=_width, height=_height,)
-        
-    )
-
-    _chrt_sonic = (
-        _base
-            .mark_line(color='purple', point=False,)
-            .encode(
-                (
-                    alt
-                        .X("DT", scale=alt.Scale(domain=(140, 40)), title="Sonic")
-                        .scale(zero=False, type="log" if select_log_scale.value else "linear")
-                        .axis(offset=0, orient="top", labelColor="purple", titleColor="purple",
-                              grid=True, gridColor="purple", gridOpacity=0.25)
-                ),
-                _SHARE_Z.axis(title="", domain=False, tickSize=0, labels=False),
-                order = 'DEPTH')
-        .properties(width=_width, height=_height,)
-        
-    )
-
-    # mo.vstack(
-    #     [
-    #         # mo.hstack([select_log, select_log_scale], justify="space-around"),
-    #         mo.hstack([_chrt, _chrt2])
-    #     ],
-    # )
-    mo.ui.altair_chart(
-        alt.hconcat(
-            _chrt, 
-            (_chrt_neutron + _chrt_density).resolve_scale(x="independent"),
-            _chrt_sonic
-        )
-    ).center()
+    """),
+               mo.vstack([tb, update_table_button], align="end")], align="start").center().callout(kind="info")
     return
+
+
+@app.cell
+def _(mo, n_log_charts):
+    mo.vstack([n_log_charts, mo.md("Changing above number will reset the chart entirely")]).callout("danger")
+    return
+
+
+@app.cell
+def _(log_charts_selections):
+    log_charts_selections.hstack(align="start", justify="space-around", gap=5)
+    return
+
+
+@app.cell
+def _(hchart, mo):
+    mo_chart = mo.ui.altair_chart(hchart.interactive())
+    mo_chart.center()
+    return
+
+
+@app.cell
+def _(mo, selection):
+    select_x = mo.ui.radio(selection[1:], value="NPHI", inline=True)
+    select_y = mo.ui.radio(selection[1:], value="RHOB", inline=True)
+    select_xlog_scale = mo.ui.switch(label="Log scale?", value=False)
+    select_ylog_scale = mo.ui.switch(label="Log scale?", value=False)
+    select_c = mo.ui.radio(selection, value="GR", inline=True)
+    return select_c, select_x, select_xlog_scale, select_y, select_ylog_scale
+
+
+@app.cell
+def _(
+    alt,
+    mo,
+    select_c,
+    select_x,
+    select_xlog_scale,
+    select_y,
+    select_ylog_scale,
+    well,
+):
+    cross_plot_chrt = mo.ui.altair_chart(
+        alt.Chart(well)
+            .mark_point(filled=True)
+            .encode(
+                alt.X(select_x.value).scale(
+                    zero=False, type="log" if select_xlog_scale.value else "linear"),
+                alt.Y(select_y.value).scale(
+                    zero=False, type="log" if select_ylog_scale.value else "linear"),
+                color=alt.Color(
+                    select_c.value
+                ).scale(scheme="rainbow").legend(True)
+            )
+            .properties(width=500, height=500, grid=True, title=f"CROSS PLOT {select_x.value} x {select_y.value}")
+            .interactive()
+    )
+    return (cross_plot_chrt,)
+
+
+@app.cell
+def _(
+    cross_plot_chrt,
+    mo,
+    select_c,
+    select_x,
+    select_xlog_scale,
+    select_y,
+    select_ylog_scale,
+):
+    mo.vstack([mo.md(""""""), mo.vstack([cross_plot_chrt, mo.md(f"""
+
+    | Config |     | Options    | Log      |
+    | :----: | --- | :--------  | :------ |
+    | X Axis |     | {select_x} | {select_xlog_scale} |
+    | Y Axis |     | {select_y} | {select_ylog_scale} |
+    | Color  |     | {select_c} |   |
+
+    """), ])], align="center").center()
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(get_values_from_table, tb, update_table_button):
+    if update_table_button.value:
+        pass
+    tb_val = {x["Log"]:get_values_from_table(x) for x in tb.value}
+    return (tb_val,)
+
+
+@app.cell(hide_code=True)
+def _(get_lims):
+    def get_values_from_table(selected_row: dict) -> dict:
+        out = {}
+        for param, value in selected_row.items():
+            try:
+                    out[param] = value.value
+            except:
+                    out[param] = value
+
+        _min = out.pop("Min")
+        _max = out.pop("Max")
+        min_max = out.pop("Min-Max")
+
+        if "auto" == min_max:
+            _min, _max = get_lims(out["Log"])
+        out["Min-Max"] = (_min, _max)
+        return out
+
+    return (get_values_from_table,)
+
+
+@app.cell
+def _(well):
+    from operator import abs
+    def get_lims(log: str) -> tuple[int|float, int|float]:
+        """Get value bounds for `log`"""
+        _max = well[log].max()
+        _min = well[log].min()
+        _pad = abs(_max - _min) // 8
+        return (_max+_pad, _min - _pad)
+    return (get_lims,)
 
 
 if __name__ == "__main__":
