@@ -228,6 +228,10 @@ def main(
     template_file: Path = Path(template)
     logger.info(f"Using template file: {template_file}")
 
+    # Export apps from the apps/ directory
+    seismic_apps_data = _export(Path("seismic_data_preprocessing_apps"), output_dir, as_app=True)
+    no_seismic_apps = (not seismic_apps_data)
+
     # Export notebooks from the notebooks/ directory
     notebooks_data = _export(Path("notebooks"), output_dir, as_app=False)
     no_notebooks = (not notebooks_data)
@@ -239,10 +243,6 @@ def main(
     # Export apps from the apps/ directory
     petro_apps_data = _export(Path("petrophysics_app"), output_dir, as_app=True)
     no_petro_apps = (not petro_apps_data)
-
-    # Export apps from the apps/ directory
-    seismic_apps_data = _export(Path("seismic_data_preprocessing_apps"), output_dir, as_app=True)
-    no_seismic_apps = (not seismic_apps_data)
 
     # Exit if no notebooks or apps were found
     if no_notebooks and no_apps and no_petro_apps and no_seismic_apps :
