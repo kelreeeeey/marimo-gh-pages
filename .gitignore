@@ -7,6 +7,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# large data
+*.segy
+*.segy_meta
+*.sgy
+*.npy
+*.npz
+*.zgy
+*.zgy*
+*.zarr/
+*.nc
+
 # C extensions
 *.so
 

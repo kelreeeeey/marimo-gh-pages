@@ -98,6 +98,7 @@ def _generate_index(
     notebooks_data: List[dict] | None = None,
     apps_data: List[dict] | None = None,
     petrophysics_app_data: List[dict] | None = None,
+    seismic_app_data: List[dict] | None = None,
 ) -> None:
     """Generate an index.html file that lists all the notebooks.
 
@@ -135,7 +136,8 @@ def _generate_index(
         # Render the template with notebook and app data
         rendered_html = template.render(notebooks=notebooks_data,
                                         apps=apps_data,
-                                        petrophysics_app=petrophysics_app_data)
+                                        petrophysics_app=petrophysics_app_data,
+                                        seismic_app=seismic_app_data)
 
         # Write the rendered HTML to the index.html file
         with open(index_path, "w") as f:
@@ -228,17 +230,22 @@ def main(
 
     # Export notebooks from the notebooks/ directory
     notebooks_data = _export(Path("notebooks"), output_dir, as_app=False)
+    no_notebooks = (not notebooks_data)
 
     # Export apps from the apps/ directory
     apps_data = _export(Path("apps"), output_dir, as_app=True)
+    no_apps = (not apps_data)
 
     # Export apps from the apps/ directory
     petro_apps_data = _export(Path("petrophysics_app"), output_dir, as_app=True)
+    no_petro_apps = (not petro_apps_data)
 
-    print(petro_apps_data, apps_data)
+    # Export apps from the apps/ directory
+    seismic_apps_data = _export(Path("seismic_data_preprocessing_apps"), output_dir, as_app=True)
+    no_seismic_apps = (not seismic_apps_data)
 
     # Exit if no notebooks or apps were found
-    if (not notebooks_data) and (not apps_data) and (not petro_apps_data):
+    if no_notebooks and no_apps and no_petro_apps and no_seismic_apps :
         logger.warning("No notebooks or apps found!")
         print("WHAT")
         return
@@ -249,6 +256,7 @@ def main(
         notebooks_data=notebooks_data,
         apps_data=apps_data,
         petrophysics_app_data=petro_apps_data,
+        seismic_app_data=seismic_apps_data,
         template_file=template_file,
     )
 
