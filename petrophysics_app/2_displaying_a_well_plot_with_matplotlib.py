@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "marimo==0.14.13",
+#     "marimo==0.14.12",
 #     "numpy==1.26.4",
 #     "pandas>=2.0.3",
 #     "pyarrow==21.0.0",
@@ -14,7 +14,7 @@
 
 import marimo
 
-__generated_with = "0.14.13"
+__generated_with = "0.14.12"
 app = marimo.App(width="medium")
 
 
@@ -279,11 +279,6 @@ def _(alt, get_lims, well):
 
     _min_d, _max_d = get_lims("DEPTH")
     DEPTH_LIMIT = (_min_d + 400, _max_d -400)
-    # brush = alt.selection_interval(encodings=['y'], empty=True)
-
-    brush = alt.selection_point(nearest=True, on="pointerover", fields=["y"], empty=False)
-
-
     base_chart = alt.Chart(well, )
 
     ORDER = "DEPTH"
@@ -300,7 +295,6 @@ def _(alt, get_lims, well):
         DEPTH_ENCODING_SHARED,
         ORDER,
         base_chart,
-        brush,
         chart_height,
         chart_width,
     )
@@ -313,7 +307,6 @@ def _(
     ORDER,
     alt,
     base_chart,
-    brush,
     chart_height,
     chart_width,
     log_charts_selections,
@@ -333,11 +326,11 @@ def _(
             log_charts[_i].append(
                 base_chart
                     .mark_line(color="black", point=False, strokeWidth=1)
-                    .encode(_z, order = ORDER).add_params(brush)
+                    .encode(_z, order = ORDER)
                 .properties(width=chart_width, height=chart_height,)
             )
         for _selected_log in _logs:
-            _log = tb_val[_selected_log]
+            _log = tb_val[_selected_log].copy()
             log_charts[_i].append(
                 base_chart
                     .mark_line(color=_log["Color"], point=False, strokeWidth=1)
@@ -350,7 +343,7 @@ def _(
                                       title=_log["Name"], titleColor=_log["Color"],
                                      grid=True, gridColor=_log["Color"], gridOpacity=0.25, domainWidth=2)
                         ),
-                        _z, order = ORDER).add_params(brush)
+                        _z, order = ORDER)
                 .properties(width=chart_width, height=chart_height,)
             )
             _offset += 50
@@ -358,20 +351,26 @@ def _(
 
 
 @app.cell
+def _(log_charts):
+    len(log_charts)
+    return
+
+
+@app.cell
 def _(alt, log_charts):
     hchart = alt.HConcatChart(
         spacing=0.0,
-        bounds="flush"
+        background="white",
+        bounds="full"
     )
 
     for _chrt in log_charts:
         if 1 == len(_chrt):
             hchart |= _chrt[0].resolve_scale(x="independent")#.add_params(brush)
         else:
-            # hchart = alt.layer(*_chrt).add_params(brush)
-            _h = _chrt[0]#.add_params(brush)
+            _h = _chrt[0].resolve_scale(x="independent")
             for _ in _chrt[1:]:
-                _h += _#.add_params(brush)
+                _h += _.resolve_scale(x="independent")
             hchart |= _h.resolve_scale(x="independent")
     return (hchart,)
 
@@ -422,6 +421,7 @@ def _(log_charts_selections):
 def _(hchart, mo):
     mo_chart = mo.ui.altair_chart(hchart.interactive())
     mo_chart.center()
+    # hchart.interactive()
     return
 
 
