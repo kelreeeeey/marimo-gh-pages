@@ -8,7 +8,6 @@
 #     "hvplot==0.11.3",
 #     "polars==1.30.0",
 #     "numpy>=1.26.4",
-#     "segyio",
 # ]
 # ///
 
@@ -53,7 +52,6 @@ def _(mo):
 @app.cell
 def _():
     import segyio
-    import obspy
     return (mo,)
 
 

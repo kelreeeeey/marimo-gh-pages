@@ -229,7 +229,7 @@ def main(
     logger.info(f"Using template file: {template_file}")
 
     # Export apps from the apps/ directory
-    seismic_apps_data = _export(Path("seismic_data_preprocessing_apps"), output_dir, as_app=True)
+    seismic_apps_data = None # _export(Path("seismic_data_preprocessing_apps"), output_dir, as_app=True)
     no_seismic_apps = (not seismic_apps_data)
 
     # Export notebooks from the notebooks/ directory
