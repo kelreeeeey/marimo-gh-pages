@@ -103,7 +103,7 @@ def _(mo):
     number_b = mo.ui.number(label="Numebr b", value=10)
 
     slider_a, number_b
-    return (slider_a,)
+    return number_b, slider_a
 
 
 @app.cell(hide_code=True)
@@ -117,17 +117,15 @@ def _(mo, slider_a):
     {slider_a.value = }
 
     > try slide the slider or change the number and see the immidiate change
-
-
     """
     )
     return
 
 
 @app.cell(hide_code=True)
-def _(mo):
+def _(mo, number_b, slider_a):
     mo.md(
-        r"""
+        f"""
     And you can do things like following, too
 
     Crying ({slider_a.value} + {number_b.value}) times
