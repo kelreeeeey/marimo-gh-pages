@@ -11,7 +11,7 @@ __generated_with = "0.14.15"
 app = marimo.App()
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""# Basic""")
     return
@@ -74,19 +74,13 @@ def _(a, b, c, mo):
     return
 
 
-@app.cell
-def _():
-    c = 90
-    return (c,)
-
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""# `marimo.ui`""")
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -107,25 +101,15 @@ def _(mo):
 def _(mo):
     slider_a = mo.ui.slider(label="Slider a", value=10, step=1, start=1, stop=20)
     number_b = mo.ui.number(label="Numebr b", value=10)
-    return number_b, slider_a
+
+    slider_a, number_b
+    return (slider_a,)
 
 
-@app.cell
-def _(slider_a):
-    slider_a
-    return
-
-
-@app.cell
-def _(number_b):
-    number_b
-    return
-
-
-@app.cell
-def _(mo, number_b, slider_a):
+@app.cell(hide_code=True)
+def _(mo, slider_a):
     mo.md(
-    f"""
+        f"""
     As you can see above, that is a nice slider and an input field.
 
     the cool part is we can acces its value by using dot notation to access its `value` property
@@ -135,7 +119,18 @@ def _(mo, number_b, slider_a):
     > try slide the slider or change the number and see the immidiate change
 
 
+    """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
     And you can do things like following, too
+
+    Crying ({slider_a.value} + {number_b.value}) times
 
     {"😭" * (slider_a.value + number_b.value)}
     """
@@ -143,9 +138,10 @@ def _(mo, number_b, slider_a):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
-    return
+    c = 90
+    return (c,)
 
 
 if __name__ == "__main__":
