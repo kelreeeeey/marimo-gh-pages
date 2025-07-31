@@ -99,6 +99,7 @@ def _generate_index(
     apps_data: List[dict] | None = None,
     petrophysics_app_data: List[dict] | None = None,
     seismic_app_data: List[dict] | None = None,
+    computational_methods_for_geophysics: List[dict] | None = None,
 ) -> None:
     """Generate an index.html file that lists all the notebooks.
 
@@ -137,7 +138,9 @@ def _generate_index(
         rendered_html = template.render(notebooks=notebooks_data,
                                         apps=apps_data,
                                         petrophysics_app=petrophysics_app_data,
-                                        seismic_app=seismic_app_data)
+                                        seismic_app=seismic_app_data,
+                                        computational_methods_for_geophysics=computational_methods_for_geophysics,
+                                        )
 
         # Write the rendered HTML to the index.html file
         with open(index_path, "w") as f:
@@ -244,8 +247,17 @@ def main(
     petro_apps_data = _export(Path("petrophysics_app"), output_dir, as_app=True)
     no_petro_apps = (not petro_apps_data)
 
+    computational_methods_for_geophysics_app = _export(Path("computational_methods_for_geophysics"), output_dir, as_app=True)
+    no_computational_methods_for_geophysics_app = (not computational_methods_for_geophysics_app)
+
     # Exit if no notebooks or apps were found
-    if no_notebooks and no_apps and no_petro_apps and no_seismic_apps :
+    if (
+            no_notebooks and\
+            no_apps and\
+            no_petro_apps and\
+            no_seismic_apps and\
+            no_computational_methods_for_geophysics_app
+    ):
         logger.warning("No notebooks or apps found!")
         print("WHAT")
         return
@@ -257,6 +269,7 @@ def main(
         apps_data=apps_data,
         petrophysics_app_data=petro_apps_data,
         seismic_app_data=seismic_apps_data,
+        computational_methods_for_geophysics=computational_methods_for_geophysics_app,
         template_file=template_file,
     )
 
