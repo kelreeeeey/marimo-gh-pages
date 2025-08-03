@@ -8,6 +8,7 @@
 #     "altair==5.5.0",
 #     "polars==1.30.0",
 #     "plotly==6.2.0",
+#     "urllib3==2.5.0",
 # ]
 # ///
 
@@ -20,10 +21,11 @@ app = marimo.App(width="full")
 @app.cell
 def _():
     import marimo as mo
-    import requests, json
+    # import requests
+    import json
     import datetime as dt
     from io import BytesIO
-    return BytesIO, dt, mo, requests
+    return BytesIO, dt, mo
 
 
 @app.cell
@@ -41,6 +43,12 @@ def _():
     ACCEPTABLE_ORDER = ["time", "time-asc", "magnitude", "magnitude-asc"]
     ACCEPTABLE_FORMAT = ["csv",]# "geojson"]
     return ACCEPTABLE_FORMAT, ACCEPTABLE_ORDER
+
+
+@app.cell
+def _():
+    import urllib3
+    return (urllib3,)
 
 
 @app.cell
@@ -144,6 +152,11 @@ def _(mo):
 
 
 @app.cell
+def _():
+    return
+
+
+@app.cell
 def _(
     BytesIO,
     agregate_items,
@@ -152,30 +165,38 @@ def _(
     mo,
     pd,
     query_url,
-    requests,
+    urllib3,
 ):
     button_start_query
+    http = urllib3.PoolManager()
     if form_query.value and button_start_query.value:
         with mo.status.spinner(title="Loading...", remove_on_exit=True) as _spinner:
             _spinner.update("Fetching the data", subtitle=f"from {query_url}")
-            _response = requests.get(query_url)
+            # _response = requests.get(query_url)
+            _response = http.request('GET', query_url)
             _spinner.update("Almost done")
-            if _response.status_code == 200:
+            # print(_response.status, _response.info())
+            # if _response.status_code == 200:
+            if _response.status == 200:
                 _spinner.update("Success")
                 query_msg = mo.as_html("Success")
                 if "csv" == form_query.value["format"]:
-                    fetched_data = pd.read_csv(BytesIO(_response.content))#, infer_schema_length=10_000)
+                    fetched_data = pd.read_csv(BytesIO(_response.data))#, infer_schema_length=10_000)
+                    # fetched_data = pd.read_csv(BytesIO(_response.content))#, infer_schema_length=10_000)
                 else:
                     raw_fetched_data = _response.json()  # For JSON data
                     fetched_data = pd.DataFrame(map(agregate_items, raw_fetched_data.pop('features')))#, infer_schema_length=10_000)
             else:
                 _spinner.update("Failed")
-                query_msg = mo.as_html(_response.content)
+                query_msg = mo.as_html(_response.status)
+                # query_msg = mo.as_html(_response.content)
                 fetched_data = pd.DataFrame()
 
     else:
         query_msg = mo.md("").center()
         fetched_data = pd.DataFrame()
+
+    http.clear()
     query_msg
     return (fetched_data,)
 
