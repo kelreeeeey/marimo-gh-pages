@@ -89,7 +89,7 @@ def _(
 ):
     form_query = mo.md("""
 
-    ## Setup Query Earthquake events from `earthquake.usgs.gov`
+    ## Query for Data Request of Earthquake events to `earthquake.usgs.gov`
 
     ---
 
