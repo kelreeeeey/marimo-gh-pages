@@ -114,8 +114,13 @@ def _(
         limit=mo.ui.number(start=1, step=1, stop=LIMIT, value=LIMIT-5000),
         orderby=mo.ui.radio(options=ACCEPTABLE_ORDER, value=ORDERBY, inline=True)
     ).form(bordered=False, submit_button_label="Submit query form", loading=False)
-    form_query.center()#.callout()
+    mo.vstack([form_query.center().callout(kind="warn"), mo.md("THIS NOTEBOOK IS IMPLEMENTING `http.request` to fetch data from `earthquake.esgs.gov`.<br>The implementation can always be seen in this notebook by the button on the top right corner of this page<br>And if you would, you may also need to allow something in your browser in order for this website to run.").callout(kind="danger")], align="center", gap=0)#.callout()
     return (form_query,)
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell
