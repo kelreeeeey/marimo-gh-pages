@@ -52,7 +52,6 @@ def _():
                 "https://kelreeeeey.github.io/yap/Marimo-Notebooks#ok-the-things-that-make-me-rethink-why-i-still-use-jupyter-notebook"
             )
         },
-        lazy=True,
     )
     return
 
