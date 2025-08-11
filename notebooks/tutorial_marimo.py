@@ -44,14 +44,17 @@ def _():
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _():
-    mo.accordion(
-        {
-            "_More to read_": mo.iframe(
-                "https://kelreeeeey.github.io/yap/Marimo-Notebooks#ok-the-things-that-make-me-rethink-why-i-still-use-jupyter-notebook"
-            )
-        },
+    mo.md(
+        r"""
+    /// details | More to read
+        type: info
+    
+    <iframe src="https://kelreeeeey.github.io/yap/Marimo-Notebooks#ok-the-things-that-make-me-rethink-why-i-still-use-jupyter-notebook" width="100%" height="600px"></iframe>
+
+    //
+    """
     )
     return
 
