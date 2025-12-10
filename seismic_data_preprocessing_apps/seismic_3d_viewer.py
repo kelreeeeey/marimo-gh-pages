@@ -12,11 +12,30 @@ import marimo
 __generated_with = "0.18.4"
 app = marimo.App(width="medium", sql_output="polars")
 
-
 @app.cell
-def _(area):
-    area
+def _(mo):
+    mo.md("""
+    # 3D Seismic Viewer Widget: threey
+
+    ```bash
+    pip install threey
+    ```
+
+    github page: [kelreeeeey/threey](https://github.com/kelreeeeey/threey)
+
+    ---
+
+    features:
+
+        - [ ] view 3D seismic data
+        - [ ] view any other 3D seismic attributes like fault cube, rgt, RMS, etc.
+        - [ ] slicer through inline, crossline, and depth slice
+        - [ ] also support 2D view, by passing flag `is_2d_view=True`
+        - [ ] support matplotlib colormaps.
+
+    """)
     return
+
 
 
 @app.cell
@@ -71,6 +90,12 @@ def _(Seismic3DViewer, mo, synthetic_data, synthetic_fault_data):
         )
     )
     return (area,)
+
+
+@app.cell
+def _(area):
+    area
+    return
 
 
 @app.cell
