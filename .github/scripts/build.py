@@ -140,6 +140,7 @@ def _generate_index(
                                         petrophysics_app=petrophysics_app_data,
                                         seismic_app=seismic_app_data,
                                         computational_methods_for_geophysics=computational_methods_for_geophysics,
+                                        # seismic_data_preprocessing_apps=seismic_data_preprocessing_apps
                                         )
 
         # Write the rendered HTML to the index.html file
@@ -232,7 +233,7 @@ def main(
     logger.info(f"Using template file: {template_file}")
 
     # Export apps from the apps/ directory
-    seismic_apps_data = None # _export(Path("seismic_data_preprocessing_apps"), output_dir, as_app=True)
+    seismic_apps_data = _export(Path("seismic_data_preprocessing_apps"), output_dir, as_app=False)
     no_seismic_apps = (not seismic_apps_data)
 
     # Export notebooks from the notebooks/ directory
